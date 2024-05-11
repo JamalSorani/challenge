@@ -7,7 +7,7 @@ class LoginUseCase {
   final AuthRepository repository;
 
   LoginUseCase({required this.repository});
-  Future<Either<Failure, AuthModel>> call(String email, String password) async {
+  Future<Either<dynamic, AuthModel>> call(String email, String password) async {
     return await repository.login(email, password);
   }
 }

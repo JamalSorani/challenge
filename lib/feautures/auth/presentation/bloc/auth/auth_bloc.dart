@@ -11,14 +11,14 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase login;
-  final LogoutUseCase logout;
+  // final LogoutUseCase logout;
   final TryAutoLoginUseCase tryAutoLogin;
-  final CreateAccountUseCase createAccoun;
+  // final CreateAccountUseCase createAccoun;
   AuthBloc({
     required this.login,
-    required this.logout,
+    // required this.logout,
     required this.tryAutoLogin,
-    required this.createAccoun,
+    // required this.createAccoun,
   }) : super(LoggingInState()) {
     on<AuthEvent>((event, emit) async {
       if (event is LoginEvent) {
@@ -29,7 +29,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }, (data) {
           emit(LoggedInState(authModel: data));
         });
-      } else if (event is TryAutoLoginEvent) {
+      }
+       else if (event is TryAutoLoginEvent) {
         emit(LoggingInState());
         final failureOrDone = await tryAutoLogin();
         failureOrDone.fold((failure) {
@@ -37,23 +38,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }, (data) {
           emit(LoggedInState(authModel: data));
         });
-      } else if (event is LogoutEvent) {
-        emit(LoadingState());
-        final failureOrDone = await logout();
-        failureOrDone.fold((failure) {
-          emit(ErrorState(message: failure.errorMessage));
-        }, (data) {
-          emit(const LoggedOutState(goToLoginPage: false));
-        });
-      } else if (event is CreateAccountEvent) {
-        emit(LoadingState());
-        final failureOrDone = await createAccoun(event.email, event.password);
-        failureOrDone.fold((failure) {
-          emit(ErrorState(message: failure.errorMessage));
-        }, (data) {
-          emit(const LoggedOutState(goToLoginPage: true));
-        });
       }
+      //  else if (event is LogoutEvent) {
+      //   emit(LoadingState());
+      //   final failureOrDone = await logout();
+      //   failureOrDone.fold((failure) {
+      //     emit(ErrorState(message: failure.errorMessage));
+      //   }, (data) {
+      //     emit(const LoggedOutState(goToLoginPage: false));
+      //   });
+      // } else if (event is CreateAccountEvent) {
+      //   emit(LoadingState());
+      //   final failureOrDone = await createAccoun(event.email, event.password);
+      //   failureOrDone.fold((failure) {
+      //     emit(ErrorState(message: failure.errorMessage));
+      //   }, (data) {
+      //     emit(const LoggedOutState(goToLoginPage: true));
+      //   });
+      // }
     });
   }
 }

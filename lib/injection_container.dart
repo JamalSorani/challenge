@@ -1,7 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:new_challenge/core/network/network_info.dart';
+import 'package:new_challenge/core/network/client/client.dart';
+import 'package:new_challenge/core/networks/network_info.dart';
+import 'package:new_challenge/core/types/api_routes.dart';
 import 'package:new_challenge/feautures/auth/data/datasources/auth_local_data_source.dart';
 import 'package:new_challenge/feautures/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:new_challenge/feautures/auth/data/repositories/auth_repository_imp.dart';
@@ -23,22 +26,22 @@ Future<void> init() async {
   sl.registerFactory(
     () => AuthBloc(
       login: sl(),
-      logout: sl(),
+      // logout: sl(),
       tryAutoLogin: sl(),
-      createAccoun: sl(),
+      // createAccoun: sl(),
     ),
   );
 
   //usecases
   sl.registerLazySingleton(() => LoginUseCase(repository: sl()));
-  sl.registerLazySingleton(() => LogoutUseCase(repository: sl()));
-  sl.registerLazySingleton(() => CreateAccountUseCase(repository: sl()));
-  sl.registerLazySingleton(
-      () => GenerateResetPasswordCodeUseCase(repository: sl()));
-  sl.registerLazySingleton(() => ConfirmAccountUseCase(repository: sl()));
-  sl.registerLazySingleton(
-      () => CheckIfResetPasswordCodeIsCorrectUseCase(repository: sl()));
-  sl.registerLazySingleton(() => ChangePasswordUseCase(repository: sl()));
+  // sl.registerLazySingleton(() => LogoutUseCase(repository: sl()));
+  // sl.registerLazySingleton(() => CreateAccountUseCase(repository: sl()));
+  // sl.registerLazySingleton(
+  //     () => GenerateResetPasswordCodeUseCase(repository: sl()));
+  // sl.registerLazySingleton(() => ConfirmAccountUseCase(repository: sl()));
+  // sl.registerLazySingleton(
+  //     () => CheckIfResetPasswordCodeIsCorrectUseCase(repository: sl()));
+  // sl.registerLazySingleton(() => ChangePasswordUseCase(repository: sl()));
   sl.registerLazySingleton(() => TryAutoLoginUseCase(repository: sl()));
 
   //repository
@@ -60,6 +63,17 @@ Future<void> init() async {
   //external
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
-  sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(() => InternetConnectionChecker());
+  sl.registerLazySingleton(() => Client(baseUrl: ApiRoutes.baseUrl,
+        interceptors: [
+          InterceptorsWrapper(
+            onRequest: (options, handler) async {
+              // final token = await TokenRepositoryImp().token;
+              // if (token != null) {
+              //   options.headers['Authorization'] = 'Bearer $token';
+              // }
+              return handler.next(options);
+            },
+          )
+        ],));
 }
